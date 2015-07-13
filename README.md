@@ -2,6 +2,8 @@
 
 >基于FIS-PLUS，一套实现前端静态资源依赖分析的smarty插件集。
 
+>exp-v1.0.0
+
 ## 在模板中使用
 
 ```html
@@ -27,3 +29,7 @@
 {%/body%}
 {%/html%}
 ```
+## 更多资料
+
+* [fis](https://github.com/fex-team/fis) 前端集成解决方案
+* [fis-plus](https://github.com/fex-team/fis-plus)
