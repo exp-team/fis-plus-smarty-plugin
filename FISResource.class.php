@@ -22,16 +22,16 @@ class FISResource {
     private static $arrAsyncDeleted = array();
 
     private static $arrStaticCollection = array();
-    //收集require.async组件
+    // 收集require.async组件
     private static $arrRequireAsyncCollection = array();
     private static $arrScriptPool = array();
 
     public static $framework = null;
 
-    //记录{%script%}, {%style%}的id属性
+    // 记录{%script%}, {%style%}的id属性
     public static $cp = null;
 
-    //{%script%} {%style%}去重
+    // {%script%} {%style%}去重
     public static $arrEmbeded = array();
 
     public static function reset() {
@@ -77,7 +77,7 @@ class FISResource {
         return $placeHolder;
     }
 
-    //输出模板的最后，替换css hook为css标签集合,替换js hook为js代码
+    // 输出模板的最后，替换css hook为css标签集合,替换js hook为js代码
     public static function renderResponse($strContent) {
         $cssIntPos = strpos($strContent, self::CSS_LINKS_HOOK);
         if($cssIntPos !== false) {
@@ -97,12 +97,12 @@ class FISResource {
         return $strContent;
     }
 
-    //设置framewok mod.js
+    // 设置framewok mod.js
     public static function setFramework($strFramework) {
         self::$framework = $strFramework;
     }
 
-    //返回静态资源uri，有包的时候，返回包的uri
+    // 返回静态资源uri，有包的时候，返回包的uri
     public static function getUri($strName, $smarty) {
         $intPos = strpos($strName, ':');
         if($intPos === false) {
@@ -144,7 +144,7 @@ class FISResource {
     /***********************autopack end *********************************/
 
     public static function getTemplate($strName, $smarty) {
-        //绝对路径
+        // 绝对路径
         return $smarty->joined_template_dir . str_replace('/template', '', self::getUri($strName, $smarty));
     }
 
@@ -152,7 +152,7 @@ class FISResource {
         $html = '';
         $resourceMap = self::getResourceMap();
         $loadModJs = (self::$framework && (isset(self::$arrStaticCollection['js']) || $resourceMap));
-        //require.resourceMap要在mod.js加载以后执行
+        // require.resourceMap要在mod.js加载以后执行
         if ($loadModJs) {
             $html .= '<script type="text/javascript" src="' . self::$framework . '"></script>' . PHP_EOL;
         }
@@ -164,7 +164,7 @@ class FISResource {
         return $html;
     }
 
-    //渲染资源，将收集到的js css，变为html标签，异步js资源变为resorce map。
+    // 渲染资源，将收集到的js css，变为html标签，异步js资源变为resorce map。
     public static function render($type) {
         $html = '';
         if ($type === 'js') {
@@ -199,7 +199,7 @@ class FISResource {
         self::$arrScriptPool[$priority][] = $str;
     }
 
-    //输出js，将页面的js源代码集合到pool，一起输出
+    // 输出js，将页面的js源代码集合到pool，一起输出
     public static function renderScriptPool() {
         $html = '';
         if(!empty(self::$arrScriptPool)) {
@@ -223,7 +223,7 @@ class FISResource {
         return $html;
     }
 
-    //获取异步js资源集合，变为json格式的resourcemap
+    // 获取异步js资源集合，变为json格式的resourcemap
     public static function getResourceMap() {
         $ret = '';
         $arrResourceMap = array();
@@ -265,7 +265,7 @@ class FISResource {
         return  $ret;
     }
 
-    //获取命名空间的map.json
+    // 获取命名空间的map.json
     public static function register($strNamespace, $smarty) {
         if($strNamespace === '__global__') {
             $strMapName = 'map.json';
@@ -290,7 +290,7 @@ class FISResource {
      * @param bool $async   是否异步
      */
     private static function loadDeps($arrRes, $smarty, $async) {
-        //require.async
+        // require.async
         if (isset($arrRes['extras']) && isset($arrRes['extras']['async'])) {
             foreach ($arrRes['extras']['async'] as $uri) {
                 self::load($uri, $smarty, true);
@@ -315,7 +315,7 @@ class FISResource {
 
             $arrRes = self::$arrRequireAsyncCollection['res'][$strName];
 
-            //first deps
+            // first deps
             if (isset($arrRes['deps'])) {
                 foreach ($arrRes['deps'] as $strDep) {
                     if (isset(self::$arrRequireAsyncCollection['res'][$strDep])) {
@@ -328,13 +328,13 @@ class FISResource {
                 return true;
             }
 
-            //second self
+            // second self
             if (isset($arrRes['pkg'])) {
                 $arrPkg = self::$arrRequireAsyncCollection['pkg'][$arrRes['pkg']];
                 $syncJs = isset(self::$arrStaticCollection['js']) ? self::$arrStaticCollection['js'] : array();
                 if ($arrPkg && !in_array($arrPkg['uri'], $syncJs)) {
-                    //@TODO
-                    //unset(self::$arrRequireAsyncCollection['pkg'][$arrRes['pkg']]);
+                    // @TODO
+                    unset(self::$arrRequireAsyncCollection['pkg'][$arrRes['pkg']]);
                     foreach ($arrPkg['has'] as $strHas) {
                         if (isset(self::$arrRequireAsyncCollection['res'][$strHas])) {
                             self::$arrLoaded[$strName] = $arrPkg['uri'];
@@ -343,15 +343,15 @@ class FISResource {
                     }
                     self::$arrStaticCollection['js'][] = $arrPkg['uri'];
                 } else {
-                    //@TODO
-                    //unset(self::$arrRequireAsyncCollection['res'][$strName]);
+                    // @TODO
+                    unset(self::$arrRequireAsyncCollection['res'][$strName]);
                 }
             } else {
-                //已经分析过的并且在其他文件里同步加载的组件，重新收集在同步输出组
+                // 已经分析过的并且在其他文件里同步加载的组件，重新收集在同步输出组
                 self::$arrStaticCollection['js'][] = $arrRes['uri'];
                 self::$arrLoaded[$strName] = $arrRes['uri'];
-                //@TODO
-                //unset(self::$arrRequireAsyncCollection['res'][$strName]);
+                // @TODO
+                unset(self::$arrRequireAsyncCollection['res'][$strName]);
             }
         }
     }
@@ -365,7 +365,7 @@ class FISResource {
      */
     public static function load($strName, $smarty, $async = false) {
         if(isset(self::$arrLoaded[$strName])) {
-            //同步组件优先级比异步组件高
+            // 同步组件优先级比异步组件高
             if (!$async && isset(self::$arrRequireAsyncCollection['res'][$strName])) {
                 self::delAsyncDeps($strName);
             }
