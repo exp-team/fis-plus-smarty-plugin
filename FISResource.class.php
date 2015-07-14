@@ -7,7 +7,9 @@
  * @version $Id$
  */
 
-if (!class_exists('FISAutoPack')) require_once(dirname(__FILE__) . '/FISAutoPack.class.php');
+if (!class_exists('FISAutoPack')) {
+    require_once(dirname(__FILE__) . '/FISAutoPack.class.php');
+}
 
 class FISResource {
 

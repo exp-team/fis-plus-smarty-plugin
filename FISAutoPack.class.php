@@ -8,7 +8,9 @@
  * @version $Id: FISAutoPack.class.php 36496 2015-07-09 06:51:44Z scmpf $
  */
 
-if (!class_exists('FISResource')) require_once(dirname(__FILE__) . '/FISResource.class.php');
+if (!class_exists('FISResource')) {
+    require_once(dirname(__FILE__) . '/FISResource.class.php');
+}
 
 /**
  * FIS自动打包页面静态资源统计脚本
