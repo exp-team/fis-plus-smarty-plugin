@@ -1,18 +1,28 @@
 <?php
-
+/**
+ * 加载组件模板资源
+ * 
+ * Copyright (c) 2015 Baidu EXP Team
+ * @see https://github.com/fex-team/fis-plus-smarty-plugin/blob/master/compiler.widget.php
+ * @example
+ * {%widget name="demo:widget/test/test.tpl"%}
+ * @package fis-plus smarty plugin
+ * @author  Yang,junlong at 2015-07-14 16:32:58 commonts.
+ * @version $Id$
+ */
 class fis_widget_map {
 
     private static $arrCached = array();
 
-    public static function lookup(&$strFilename, &$smarty){
+    public static function lookup(&$strFilename, &$smarty) {
         $strPath = self::$arrCached[$strFilename];
-        if(isset($strPath)){
+        if(isset($strPath)) {
             return $strPath;
         } else {
             $arrConfigDir = $smarty->getConfigDir();
             foreach ($arrConfigDir as $strDir) {
                 $strPath = preg_replace('/[\\/\\\\]+/', '/', $strDir . '/' . $strFilename);
-                if(is_file($strPath)){
+                if(is_file($strPath)) {
                     self::$arrCached[$strFilename] = $strPath;
                     return $strPath;
                 }
@@ -22,10 +32,10 @@ class fis_widget_map {
     }
 }
 
-function smarty_compiler_widget($arrParams,  $smarty){
+function smarty_compiler_widget($arrParams, $smarty) {
     //支持1.X widget 通过path属性判断 同时判断是否有name属性
     if (isset($arrParams['path'])) {
-        if(!isset($arrParams['name']) || strpos($arrParams['name'], ':') === false){
+        if(!isset($arrParams['name']) || strpos($arrParams['name'], ':') === false) {
             $path = $arrParams['path'];
             unset($arrParams['path']);
             return getWidgetStrCode($path, $arrParams);
@@ -41,7 +51,7 @@ function smarty_compiler_widget($arrParams,  $smarty){
     //construct params
     $strFuncParams = getFuncParams($arrParams);
 
-    if($bHasCall){
+    if($bHasCall) {
         unset($arrParams['call']);
         $strTplFuncName = '\'smarty_template_function_\'.' . $strCall;
         $strCallTplFunc = 'call_user_func('. $strTplFuncName . ',$_smarty_tpl,' . $strFuncParams . ');';
@@ -51,10 +61,10 @@ function smarty_compiler_widget($arrParams,  $smarty){
         $strCode .= '}else{';
     }
 
-    if($strName){
+    if($strName) {
         $strCode .= '$_tpl_path=FISResource::getUri(' . $strName . ',$_smarty_tpl->smarty);';
         $strCode .= 'if(isset($_tpl_path)){';
-        if($bHasCall){
+        if($bHasCall) {
             $strCode .= '$_smarty_tpl->getSubTemplate($_tpl_path, $_smarty_tpl->cache_id, $_smarty_tpl->compile_id, $_smarty_tpl->caching, $_smarty_tpl->cache_lifetime, ' . $strFuncParams . ', Smarty::SCOPE_LOCAL);';
             $strCode .= 'if(is_callable('. $strTplFuncName . ')){';
             $strCode .= $strCallTplFunc;
@@ -71,7 +81,7 @@ function smarty_compiler_widget($arrParams,  $smarty){
     } else {
         trigger_error('undefined widget name in file "' . $smarty->_current_file . '"', E_USER_ERROR);
     }
-    if($bHasCall){
+    if($bHasCall) {
         $strCode .= '}';
     }
     $strCode .= '?>';
@@ -79,7 +89,7 @@ function smarty_compiler_widget($arrParams,  $smarty){
 }
 
 
-function getWidgetStrCode($path, $arrParams){
+function getWidgetStrCode($path, $arrParams) {
     $strFuncParams = getFuncParams($arrParams);
     $path = trim($path,"\"");
     $fn = '"smarty_template_function_fis_' . strtr(substr($path, 0, strrpos($path, '/')), '/', '_') . '"';
@@ -97,7 +107,7 @@ function getWidgetStrCode($path, $arrParams){
     return $strCode;
 }
 
-function getFuncParams($arrParams){
+function getFuncParams($arrParams) {
     $arrFuncParams = array();
     foreach ($arrParams as $_key => $_value) {
         if (is_int($_key)) {

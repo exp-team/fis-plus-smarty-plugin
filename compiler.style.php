@@ -1,6 +1,18 @@
 <?php
-
-function smarty_compiler_style($params,  $smarty){
+/**
+ * 收集页面中的样式资源, 并输出到页面
+ * 
+ * Copyright (c) 2015 Baidu EXP Team
+ * @see https://github.com/fex-team/fis-plus-smarty-plugin/blob/master/compiler.style.php
+ * @example
+ * {%style id="demo"%}
+ *     //TODO stylesheet
+ * {%/style%}
+ * @package fis-plus smarty plugin
+ * @author  Yang,junlong at 2015-07-14 16:27:12 comments.
+ * @version $Id$
+ */
+function smarty_compiler_style($params, $smarty) {
     $strCode = '<?php ';
     if (isset($params['id'])) {
         $strResourceApiPath = preg_replace('/[\\/\\\\]+/', '/', dirname(__FILE__) . '/FISResource.class.php');
@@ -11,7 +23,7 @@ function smarty_compiler_style($params,  $smarty){
     return $strCode;
 }
 
-function smarty_compiler_styleclose($params,  $smarty){
+function smarty_compiler_styleclose($params, $smarty) {
     $strResourceApiPath = preg_replace('/[\\/\\\\]+/', '/', dirname(__FILE__) . '/FISResource.class.php');
     $strCode  = '<?php ';
     $strCode .= '$style=ob_get_clean();';

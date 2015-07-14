@@ -1,6 +1,19 @@
 <?php
+/**
+ * 收集页面中的javascript资源, 添加到脚本pool中, 便于同样在页面底部输出
+ * 
+ * Copyright (c) 2015 Baidu EXP Team
+ * @see https://github.com/fex-team/fis-plus-smarty-plugin/blob/master/compiler.script.php
+ * @example
+ * {%script id="demo" priority="10"%}
+ *     //TODO javascript code
+ * {%/script%}
+ * @package fis-plus smarty plugin
+ * @author  Yang,junlong at 2015-07-14 16:24:32 comments.
+ * @version $Id$
+ */
 
-function smarty_compiler_script($params,  $smarty){
+function smarty_compiler_script($params, $smarty) {
     $strPriority = isset($params['priority']) ? $params['priority'] : '0';
     $strCode = '<?php ';
     if (isset($params['id'])) {
@@ -13,7 +26,7 @@ function smarty_compiler_script($params,  $smarty){
     return $strCode;
 }
 
-function smarty_compiler_scriptclose($params,  $smarty){
+function smarty_compiler_scriptclose($params, $smarty){
     $strResourceApiPath = preg_replace('/[\\/\\\\]+/', '/', dirname(__FILE__) . '/FISResource.class.php');
     $strCode  = '<?php ';
     $strCode .= '$script=ob_get_clean();';

@@ -1,5 +1,11 @@
 <?php
-
+/**
+ * FIS-PLUS 核心 smarty 插件类
+ *
+ * @package fis-plus smarty plugin
+ * @author  Yang,junlong at 2015-07-14 16:39:05 build.
+ * @version $Id$
+ */
 class FISResource {
 
     const CSS_LINKS_HOOK = '<!--[FIS_CSS_LINKS_HOOK]-->';
@@ -23,7 +29,7 @@ class FISResource {
     //{%script%} {%style%}去重
     public static $arrEmbeded = array();
 
-    public static function reset(){
+    public static function reset() {
         self::$arrMap = array();
         self::$arrLoaded = array();
         self::$arrAsyncDeleted = array();
@@ -55,15 +61,15 @@ class FISResource {
         }
     }
 
-    public static function cssHook(){
+    public static function cssHook() {
         return self::CSS_LINKS_HOOK;
     }
 
-    public static function jsHook(){
+    public static function jsHook() {
         return self::JS_SCRIPT_HOOK;
     }
 
-    public static function placeHolder($mode){
+    public static function placeHolder($mode) {
         $placeHolder = '';
         switch ($mode) {
             case 'modjs':
@@ -76,17 +82,17 @@ class FISResource {
     }
 
     //输出模板的最后，替换css hook为css标签集合,替换js hook为js代码
-    public static function renderResponse($strContent){
+    public static function renderResponse($strContent) {
         $cssIntPos = strpos($strContent, self::CSS_LINKS_HOOK);
-        if($cssIntPos !== false){
+        if($cssIntPos !== false) {
             $strContent = substr_replace($strContent, self::render('css'), $cssIntPos, strlen(self::CSS_LINKS_HOOK));
         }
         $frameworkIntPos = strpos($strContent, self::FRAMEWORK_HOOK);
-        if($frameworkIntPos !== false){
+        if($frameworkIntPos !== false) {
             $strContent = substr_replace($strContent, self::render('framework'), $frameworkIntPos, strlen(self::FRAMEWORK_HOOK));
         }
         $jsIntPos = strpos($strContent, self::JS_SCRIPT_HOOK);
-        if($jsIntPos !== false){
+        if($jsIntPos !== false) {
             $jsContent = ($frameworkIntPos !== false) ? '' : self::getModJsHtml(); 
             $jsContent .= self::render('js') . self::renderScriptPool();
             $strContent = substr_replace($strContent, $jsContent, $jsIntPos, strlen(self::JS_SCRIPT_HOOK));
@@ -103,7 +109,7 @@ class FISResource {
     //返回静态资源uri，有包的时候，返回包的uri
     public static function getUri($strName, $smarty) {
         $intPos = strpos($strName, ':');
-        if($intPos === false){
+        if($intPos === false) {
             $strNamespace = '__global__';
         } else {
             $strNamespace = substr($strName, 0, $intPos);
@@ -127,7 +133,7 @@ class FISResource {
         return $smarty->joined_template_dir . str_replace('/template', '', self::getUri($strName, $smarty));
     }
 
-    private static function getModJsHtml(){
+    private static function getModJsHtml() {
         $html = '';
         $resourceMap = self::getResourceMap();
         $loadModJs = (self::$framework && (isset(self::$arrStaticCollection['js']) || $resourceMap));
@@ -144,7 +150,7 @@ class FISResource {
     }
 
     //渲染资源，将收集到的js css，变为html标签，异步js资源变为resorce map。
-    public static function render($type){
+    public static function render($type) {
         $html = '';
         if ($type === 'js') {
             if (isset(self::$arrStaticCollection['js'])) {
@@ -156,12 +162,12 @@ class FISResource {
                     $html .= '<script type="text/javascript" src="' . $uri . '"></script>' . PHP_EOL;
                 }
             }
-        } else if($type === 'css'){
+        } else if($type === 'css') {
             if(isset(self::$arrStaticCollection['css'])){
                 $arrURIs = &self::$arrStaticCollection['css'];
                 $html = '<link rel="stylesheet" type="text/css" href="' . implode('"/><link rel="stylesheet" type="text/css" href="', $arrURIs) . '"/>';
             }
-        } else if($type === 'framework'){
+        } else if($type === 'framework') {
             $html .= self::getModJsHtml();
         }
 
@@ -234,7 +240,7 @@ class FISResource {
     }
 
     //获取命名空间的map.json
-    public static function register($strNamespace, $smarty){
+    public static function register($strNamespace, $smarty) {
         if($strNamespace === '__global__'){
             $strMapName = 'map.json';
         } else {
@@ -331,7 +337,7 @@ class FISResource {
      * @param bool $async   是否为异步组件（only JS）
      * @return mixed
      */
-    public static function load($strName, $smarty, $async = false){
+    public static function load($strName, $smarty, $async = false) {
         if(isset(self::$arrLoaded[$strName])) {
             //同步组件优先级比异步组件高
             if (!$async && isset(self::$arrRequireAsyncCollection['res'][$strName])) {
@@ -345,13 +351,13 @@ class FISResource {
             } else {
                 $strNamespace = substr($strName, 0, $intPos);
             }
-            if(isset(self::$arrMap[$strNamespace]) || self::register($strNamespace, $smarty)){
+            if(isset(self::$arrMap[$strNamespace]) || self::register($strNamespace, $smarty)) {
                 $arrMap = &self::$arrMap[$strNamespace];
                 $arrPkg = null;
                 $arrPkgHas = array();
                 if(isset($arrMap['res'][$strName])) {
                     $arrRes = &$arrMap['res'][$strName];
-                    if(!array_key_exists('fis_debug', $_GET) && isset($arrRes['pkg'])){
+                    if(!array_key_exists('fis_debug', $_GET) && isset($arrRes['pkg'])) {
                         $arrPkg = &$arrMap['pkg'][$arrRes['pkg']];
                         $strURI = $arrPkg['uri'];
 

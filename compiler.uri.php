@@ -1,6 +1,16 @@
 <?php
-
-function smarty_compiler_uri($arrParams,  $smarty){
+/**
+ * 获取静态资源地址
+ * 
+ * Copyright (c) 2015 Baidu EXP Team
+ * @see https://github.com/fex-team/fis-plus-smarty-plugin/blob/master/compiler.uri.php
+ * @example
+ * <img src="{%url name="demo:widget/test/img/test.png"%}" />
+ * @package fis-plus smarty plugin
+ * @author  Yang,junlong at 2015-07-14 16:29:29 commonts.
+ * @version $Id$
+ */
+function smarty_compiler_uri($arrParams, $smarty) {
     $strName = $arrParams['name'];
     $strCode = '';
     if($strName){

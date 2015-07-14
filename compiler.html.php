@@ -1,5 +1,23 @@
 <?php
-function smarty_compiler_html($arrParams,  $smarty){
+/**
+ * 接管模板页面中的html标签 结束标签时替换页面中的Hook
+ * 
+ * Copyright (c) 2015 Baidu EXP Team
+ * @see https://github.com/fex-team/fis-plus-smarty-plugin/blob/master/compiler.html.php
+ * @example
+ * {%html id="html" class="html" framework=""%}
+ *     {%head%}
+ *     
+ *     {%/head%}
+ *     {%body%}
+ *     
+ *     {%/body%}
+ * {%/html%}
+ * @package fis-plus smarty plugin
+ * @author  Yang,junlong at 2015-07-14 16:10:13 commonts.
+ * @version $Id$
+ */
+function smarty_compiler_html($arrParams,  $smarty) {
     $strResourceApiPath = preg_replace('/[\\/\\\\]+/', '/', dirname(__FILE__) . '/FISResource.class.php');
     $strFramework = $arrParams['framework'];
     unset($arrParams['framework']);
@@ -22,7 +40,7 @@ function smarty_compiler_html($arrParams,  $smarty){
     return $strCode . "<html{$strAttr}>";
 }
 
-function smarty_compiler_htmlclose($arrParams,  $smarty){
+function smarty_compiler_htmlclose($arrParams,  $smarty) {
     $strCode = '<?php ';
     $strCode .= '$_smarty_tpl->registerFilter(\'output\', array(\'FISResource\', \'renderResponse\'));';
     $strCode .= '?>';
