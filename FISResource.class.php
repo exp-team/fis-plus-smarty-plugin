@@ -6,6 +6,9 @@
  * @author  Yang,junlong at 2015-07-14 16:39:05 build.
  * @version $Id$
  */
+
+if (!class_exists('FISAutoPack')) require_once(dirname(__FILE__) . '/FISAutoPack.class.php');
+
 class FISResource {
 
     const CSS_LINKS_HOOK = '<!--[FIS_CSS_LINKS_HOOK]-->';
@@ -38,21 +41,12 @@ class FISResource {
         self::$framework  = null;
     }
 
-    public static function addStatic($src, $typ) {
-        if (!$typ) {
-            preg_match('/\.(\w+)(?:\?[\s\S]+)?$/', $src, $m);
-            if (!$m) {
-                return;
-            }
-            $typ = $m[1];
-        }
-
-        $typ = trim($typ);
-
-        if (!in_array($type, array('js', 'css'))) {
+    public static function addStatic($src) {
+        preg_match('/\.(\w+)(?:\?[\s\S]+)?$/', $src, $m);
+        if (!$m) {
             return;
         }
-
+        $typ = $m[1];
         if (!is_array(self::$arrStaticCollection[$typ])) {
             self::$arrStaticCollection[$typ] = array();
         }
@@ -128,6 +122,25 @@ class FISResource {
         }
     }
 
+    /**********************autopack api*****************************/ 
+
+    public static function getStaticInfo($strName, $smarty) {
+        $intPos = strpos($strName, ':');
+        if($intPos === false) {
+            $strNamespace = '__global__';
+        } else {
+            $strNamespace = substr($strName, 0, $intPos);
+        }
+        if(isset(self::$arrMap[$strNamespace]) || self::register($strNamespace, $smarty)) {
+            $arrMap = &self::$arrMap[$strNamespace];
+            $arrRes = &$arrMap['res'][$strName];
+            if (isset($arrRes)) {
+                return $arrRes;
+            }
+        }
+    }
+    /***********************autopack end *********************************/
+
     public static function getTemplate($strName, $smarty) {
         //绝对路径
         return $smarty->joined_template_dir . str_replace('/template', '', self::getUri($strName, $smarty));
@@ -163,7 +176,7 @@ class FISResource {
                 }
             }
         } else if($type === 'css') {
-            if(isset(self::$arrStaticCollection['css'])){
+            if(isset(self::$arrStaticCollection['css'])) {
                 $arrURIs = &self::$arrStaticCollection['css'];
                 $html = '<link rel="stylesheet" type="text/css" href="' . implode('"/><link rel="stylesheet" type="text/css" href="', $arrURIs) . '"/>';
             }
@@ -185,7 +198,7 @@ class FISResource {
     }
 
     //输出js，将页面的js源代码集合到pool，一起输出
-    public static function renderScriptPool(){
+    public static function renderScriptPool() {
         $html = '';
         if(!empty(self::$arrScriptPool)) {
             $priorities =  array_keys(self::$arrScriptPool);
@@ -194,6 +207,17 @@ class FISResource {
                 $html .= '<script type="text/javascript">!function(){' . implode("}();\n!function(){", self::$arrScriptPool[$priority]) . '}();</script>';
             }
         }
+
+        /**************autopack getCountUrl for sending log*********************/
+        if (class_exists('FISAutoPack') ) {
+            $jsCode = FISAutoPack::getCountUrl();
+            if($jsCode != ""){
+                $html .=  '<script type="text/javascript">' . $jsCode . '</script>';
+            }
+        }
+        
+        /**************autopack end*********************/
+
         return $html;
     }
 
@@ -241,7 +265,7 @@ class FISResource {
 
     //获取命名空间的map.json
     public static function register($strNamespace, $smarty) {
-        if($strNamespace === '__global__'){
+        if($strNamespace === '__global__') {
             $strMapName = 'map.json';
         } else {
             $strMapName = $strNamespace . '-map.json';
@@ -270,7 +294,7 @@ class FISResource {
                 self::load($uri, $smarty, true);
             }
         }
-        if(isset($arrRes['deps'])){
+        if(isset($arrRes['deps'])) {
             foreach ($arrRes['deps'] as $strDep) {
                 self::load($strDep, $smarty, $async);
             }

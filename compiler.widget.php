@@ -10,6 +10,7 @@
  * @author  Yang,junlong at 2015-07-14 16:32:58 commonts.
  * @version $Id$
  */
+
 class fis_widget_map {
 
     private static $arrCached = array();
@@ -44,8 +45,14 @@ function smarty_compiler_widget($arrParams, $smarty) {
 
     $strResourceApiPath = preg_replace('/[\\/\\\\]+/', '/', dirname(__FILE__) . '/FISResource.class.php');
     $strCode = '<?php if(!class_exists(\'FISResource\', false)){require_once(\'' . $strResourceApiPath . '\');}';
-    $strCall = isset($arrParams['call']) ? $arrParams['call'] : null;
-    $bHasCall = ($strCall != null);
+
+    /******************autopack load php*****************************/
+    $strAutoPackPath = preg_replace('/[\\/\\\\]+/', '/', dirname(__FILE__) . '/FISAutoPack.class.php');
+    $strCode .= 'if(!class_exists(\'FISAutoPack\')){require_once(\'' . $strAutoPackPath . '\');}';
+    /******************autopack end******************************/
+
+    $strCall = $arrParams['call'];
+    $bHasCall = isset($strCall);
     $strName = $arrParams['name'];
     unset($arrParams['name']);
     //construct params
@@ -60,8 +67,13 @@ function smarty_compiler_widget($arrParams, $smarty) {
         $strCode .= $strCallTplFunc;
         $strCode .= '}else{';
     }
-
     if($strName) {
+
+        /********************autopack collect***********************/     
+        $strCode .= 'FISAutoPack::addHashTable(' . $strName . ',$_smarty_tpl->smarty);';
+        /*******************autopack end **************************/
+
+
         $strCode .= '$_tpl_path=FISResource::getUri(' . $strName . ',$_smarty_tpl->smarty);';
         $strCode .= 'if(isset($_tpl_path)){';
         if($bHasCall) {
@@ -87,7 +99,6 @@ function smarty_compiler_widget($arrParams, $smarty) {
     $strCode .= '?>';
     return $strCode;
 }
-
 
 function getWidgetStrCode($path, $arrParams) {
     $strFuncParams = getFuncParams($arrParams);
