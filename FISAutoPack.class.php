@@ -5,7 +5,7 @@
  * @see http://solar.baidu.com/autopack/doc?file=FIS%E9%9D%99%E6%80%81%E8%B5%84%E6%BA%90%E8%87%AA%E5%8A%A8%E5%90%88%E5%B9%B6%E7%B3%BB%E7%BB%9F%E4%BD%BF%E7%94%A8%E6%96%87%E6%A1%A3
  * http://gitlab.baidu.com/fis-dev/fis-plus-smarty-plugin/tree/autopack-fisplus
  * @author Yang,junlong at 2015-07-03 16:43:24 update.
- * @version $Id: FISAutoPack.class.php 36496 2015-07-09 06:51:44Z scmpf $
+ * @version $Id$
  */
 
 if (!class_exists('FISResource')) {

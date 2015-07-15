@@ -3,7 +3,7 @@
  * FIS-PLUS 核心 smarty 插件类
  *
  * @package fis-plus smarty plugin
- * @author  Yang,junlong at 2015-07-14 16:39:05 build.
+ * @author  Yang,junlong at 2015-07-14 16:39:05 update.
  * @version $Id$
  */
 
