@@ -211,7 +211,7 @@ class FISResource {
         }
 
         /**************autopack getCountUrl for sending log*********************/
-        if (class_exists('FISAutoPack') ) {
+        if (class_exists('FISAutoPack')) {
             $jsCode = FISAutoPack::getCountUrl();
             if($jsCode != ""){
                 $html .=  '<script type="text/javascript">' . $jsCode . '</script>';
@@ -334,7 +334,7 @@ class FISResource {
                 $syncJs = isset(self::$arrStaticCollection['js']) ? self::$arrStaticCollection['js'] : array();
                 if ($arrPkg && !in_array($arrPkg['uri'], $syncJs)) {
                     // @TODO
-                    unset(self::$arrRequireAsyncCollection['pkg'][$arrRes['pkg']]);
+                    // unset(self::$arrRequireAsyncCollection['pkg'][$arrRes['pkg']]);
                     foreach ($arrPkg['has'] as $strHas) {
                         if (isset(self::$arrRequireAsyncCollection['res'][$strHas])) {
                             self::$arrLoaded[$strName] = $arrPkg['uri'];
@@ -344,14 +344,14 @@ class FISResource {
                     self::$arrStaticCollection['js'][] = $arrPkg['uri'];
                 } else {
                     // @TODO
-                    unset(self::$arrRequireAsyncCollection['res'][$strName]);
+                    // unset(self::$arrRequireAsyncCollection['res'][$strName]);
                 }
             } else {
                 // 已经分析过的并且在其他文件里同步加载的组件，重新收集在同步输出组
                 self::$arrStaticCollection['js'][] = $arrRes['uri'];
                 self::$arrLoaded[$strName] = $arrRes['uri'];
                 // @TODO
-                unset(self::$arrRequireAsyncCollection['res'][$strName]);
+                // unset(self::$arrRequireAsyncCollection['res'][$strName]);
             }
         }
     }
