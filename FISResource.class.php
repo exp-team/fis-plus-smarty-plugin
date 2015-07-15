@@ -43,20 +43,6 @@ class FISResource {
         self::$framework  = null;
     }
 
-    public static function addStatic($src) {
-        preg_match('/\.(\w+)(?:\?[\s\S]+)?$/', $src, $m);
-        if (!$m) {
-            return;
-        }
-        $typ = $m[1];
-        if (!is_array(self::$arrStaticCollection[$typ])) {
-            self::$arrStaticCollection[$typ] = array();
-        }
-        if (!in_array($src, self::$arrStaticCollection[$typ])) {
-            self::$arrStaticCollection[$typ][] = $src;
-        }
-    }
-
     public static function cssHook() {
         return self::CSS_LINKS_HOOK;
     }
@@ -170,7 +156,11 @@ class FISResource {
         if ($type === 'js') {
             if (isset(self::$arrStaticCollection['js'])) {
                 $arrURIs = &self::$arrStaticCollection['js'];
-                foreach ($arrURIs as $uri) {
+                $_arrURIs = array();
+                foreach ($arrURIs as $key => $value) {
+                    $_arrURIs  = array_merge($_arrURIs, $value);
+                }
+                foreach ($_arrURIs as $uri) {
                     if ($uri === self::$framework) {
                         continue;
                     }
@@ -180,7 +170,11 @@ class FISResource {
         } else if($type === 'css') {
             if(isset(self::$arrStaticCollection['css'])) {
                 $arrURIs = &self::$arrStaticCollection['css'];
-                $html = '<link rel="stylesheet" type="text/css" href="' . implode('"/><link rel="stylesheet" type="text/css" href="', $arrURIs) . '"/>';
+                $_arrURIs = array();
+                foreach ($arrURIs as $key => $value) {
+                    $_arrURIs  = array_merge($_arrURIs, $value);
+                }
+                $html = '<link rel="stylesheet" type="text/css" href="' . implode('"/><link rel="stylesheet" type="text/css" href="', $_arrURIs) . '"/>';
             }
         } else if($type === 'framework') {
             $html .= self::getModJsHtml();
@@ -190,8 +184,14 @@ class FISResource {
     }
 
     
-
-    public static function addScriptPool($str, $priority) {
+    /**
+     * add {%script%}{%/script%} to pool
+     * 
+     * @param [type]  $str      widget name
+     * @param integer $priority 权重值
+     * @return [void] 
+     */
+    public static function addScriptPool($str, $priority = 0) {
         $priority = intval($priority);
         if (!isset(self::$arrScriptPool[$priority])) {
             self::$arrScriptPool[$priority] = array();
@@ -213,7 +213,7 @@ class FISResource {
         /**************autopack getCountUrl for sending log*********************/
         if (class_exists('FISAutoPack')) {
             $jsCode = FISAutoPack::getCountUrl();
-            if($jsCode != ""){
+            if($jsCode != "") {
                 $html .=  '<script type="text/javascript">' . $jsCode . '</script>';
             }
         }
@@ -227,7 +227,6 @@ class FISResource {
     public static function getResourceMap() {
         $ret = '';
         $arrResourceMap = array();
-        $needPkg = !array_key_exists('fis_debug', $_GET);
         if (isset(self::$arrRequireAsyncCollection['res'])) {
             foreach (self::$arrRequireAsyncCollection['res'] as $id => $arrRes) {
                 $deps = array();
@@ -243,7 +242,7 @@ class FISResource {
                     'url' => $arrRes['uri'],
                 );
 
-                if (!empty($arrRes['pkg']) && $needPkg) {
+                if (!empty($arrRes['pkg'])) {
                     $arrResourceMap['res'][$id]['pkg'] = $arrRes['pkg'];
                 }
 
@@ -252,7 +251,7 @@ class FISResource {
                 }
             }
         }
-        if (isset(self::$arrRequireAsyncCollection['pkg']) && $needPkg) {
+        if (isset(self::$arrRequireAsyncCollection['pkg'])) {
             foreach (self::$arrRequireAsyncCollection['pkg'] as $id => $arrRes) {
                 $arrResourceMap['pkg'][$id] = array(
                     'url'=> $arrRes['uri']
@@ -307,7 +306,7 @@ class FISResource {
      * 已经分析到的组件在后续被同步使用时在异步组里删除。
      * @param $strName
      */
-    private static function delAsyncDeps($strName, $onlyDeps = false) {
+    private static function delAsyncDeps($strName) {
         if (isset(self::$arrAsyncDeleted[$strName])) {
             return true;
         } else {
@@ -324,31 +323,33 @@ class FISResource {
                 }
             }
 
-            if ($onlyDeps) {
-                return true;
+            $intPos = strpos($strName, ':');
+            if($intPos === false){
+                $strNamespace = '__global__';
+            } else {
+                $strNamespace = substr($strName, 0, $intPos);
             }
-
             // second self
             if (isset($arrRes['pkg'])) {
                 $arrPkg = self::$arrRequireAsyncCollection['pkg'][$arrRes['pkg']];
                 $syncJs = isset(self::$arrStaticCollection['js']) ? self::$arrStaticCollection['js'] : array();
                 if ($arrPkg && !in_array($arrPkg['uri'], $syncJs)) {
+                    self::$arrStaticCollection['js'][$strNamespace][] = $arrPkg['uri'];
                     // @TODO
                     unset(self::$arrRequireAsyncCollection['pkg'][$arrRes['pkg']]);
                     foreach ($arrPkg['has'] as $strHas) {
                         if (isset(self::$arrRequireAsyncCollection['res'][$strHas])) {
                             self::$arrLoaded[$strName] = $arrPkg['uri'];
-                            self::delAsyncDeps($strHas, true);
+                            self::delAsyncDeps($strHas);
                         }
                     }
-                    self::$arrStaticCollection['js'][] = $arrPkg['uri'];
                 } else {
                     // @TODO
                     unset(self::$arrRequireAsyncCollection['res'][$strName]);
                 }
             } else {
                 // 已经分析过的并且在其他文件里同步加载的组件，重新收集在同步输出组
-                self::$arrStaticCollection['js'][] = $arrRes['uri'];
+                self::$arrStaticCollection['js'][$strNamespace][] = $arrRes['uri'];
                 self::$arrLoaded[$strName] = $arrRes['uri'];
                 // @TODO
                 unset(self::$arrRequireAsyncCollection['res'][$strName]);
@@ -364,6 +365,7 @@ class FISResource {
      * @return mixed
      */
     public static function load($strName, $smarty, $async = false) {
+        // print_r(self::$arrStaticCollection);
         if(isset(self::$arrLoaded[$strName])) {
             // 同步组件优先级比异步组件高
             if (!$async && isset(self::$arrRequireAsyncCollection['res'][$strName])) {
@@ -411,7 +413,7 @@ class FISResource {
                             self::$arrRequireAsyncCollection['res'][$strName] = $arrRes;
                         }
                     } else {
-                        self::$arrStaticCollection[$arrRes['type']][] = $strURI;
+                        self::$arrStaticCollection[$arrRes['type']][$strNamespace][] = $strURI;
                     }
                     return $strURI;
                 } else {
