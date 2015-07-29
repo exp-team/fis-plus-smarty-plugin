@@ -4,8 +4,9 @@
  *
  * @package fis-plus smarty plugin
  * @author  Yang,junlong at 2015-07-14 16:39:05 build.
- * @version $Id$
+ * @version $Id: FISResource.class.php 36962 2015-07-29 09:27:24Z yangjunlong $
  */
+
 class FISResource {
 
     const CSS_LINKS_HOOK = '<!--[FIS_CSS_LINKS_HOOK]-->';
@@ -38,6 +39,12 @@ class FISResource {
         self::$framework  = null;
     }
 
+    /**
+     * add static resource
+     * 
+     * @param [String] $src [description]
+     * @param [String] $typ [description]
+     */
     public static function addStatic($src, $typ) {
         if (!$typ) {
             preg_match('/\.(\w+)(?:\?[\s\S]+)?$/', $src, $m);
@@ -61,14 +68,30 @@ class FISResource {
         }
     }
 
+    /**
+     * CSS HOOK
+     * 
+     * @return [String] [css hook placeholder]
+     */
     public static function cssHook() {
         return self::CSS_LINKS_HOOK;
     }
 
+    /**
+     * JS HOOK
+     * 
+     * @return [String] [js hook placeholder]
+     */
     public static function jsHook() {
         return self::JS_SCRIPT_HOOK;
     }
 
+    /**
+     * placeholder
+     *
+     * @param  [String] $mode [description]
+     * @return [String]       [description]
+     */
     public static function placeHolder($mode) {
         $placeHolder = '';
         switch ($mode) {
@@ -81,7 +104,12 @@ class FISResource {
         return $placeHolder;
     }
 
-    //输出模板的最后，替换css hook为css标签集合,替换js hook为js代码
+    /**
+     * 输出模板的最后，替换css hook为css标签集合,替换js hook为js代码
+     * 
+     * @param  [String] $strContent [page content]
+     * @return [String]             [page content]
+     */
     public static function renderResponse($strContent) {
         $cssIntPos = strpos($strContent, self::CSS_LINKS_HOOK);
         if($cssIntPos !== false) {
@@ -101,12 +129,22 @@ class FISResource {
         return $strContent;
     }
 
-    //设置framewok mod.js
+    /**
+     * 设置framewok mod.js
+     *
+     * @param [String] $strFramework [description]
+     */
     public static function setFramework($strFramework) {
         self::$framework = $strFramework;
     }
 
-    //返回静态资源uri，有包的时候，返回包的uri
+    /**
+     * 返回静态资源uri，有包的时候，返回包的uri
+     *
+     * @param  [String] $strName [description]
+     * @param  [Smarty] $smarty  [description]
+     * @return [Array]          [description]
+     */
     public static function getUri($strName, $smarty) {
         $intPos = strpos($strName, ':');
         if($intPos === false) {
@@ -128,11 +166,23 @@ class FISResource {
         }
     }
 
+    /**
+     * get template
+     * 
+     * @param  [String] $strName [description]
+     * @param  [Smarty] $smarty  [description]
+     * @return [String]          [description]
+     */
     public static function getTemplate($strName, $smarty) {
         //绝对路径
         return $smarty->joined_template_dir . str_replace('/template', '', self::getUri($strName, $smarty));
     }
 
+    /**
+     * get modjs html
+     * 
+     * @return [String] [description]
+     */
     private static function getModJsHtml() {
         $html = '';
         $resourceMap = self::getResourceMap();
@@ -149,7 +199,12 @@ class FISResource {
         return $html;
     }
 
-    //渲染资源，将收集到的js css，变为html标签，异步js资源变为resorce map。
+    /**
+     * 渲染资源，将收集到的js css，变为html标签，异步js资源变为resorce map。
+     *
+     * @param  [String] $type [description]
+     * @return [String]       [description]
+     */
     public static function render($type) {
         $html = '';
         if ($type === 'js') {
@@ -174,8 +229,12 @@ class FISResource {
         return $html;
     }
 
-    
-
+    /**
+     * add script pool
+     * 
+     * @param [String] $str      [description]
+     * @param [Number] $priority [description]
+     */
     public static function addScriptPool($str, $priority) {
         $priority = intval($priority);
         if (!isset(self::$arrScriptPool[$priority])) {
@@ -184,7 +243,11 @@ class FISResource {
         self::$arrScriptPool[$priority][] = $str;
     }
 
-    //输出js，将页面的js源代码集合到pool，一起输出
+    /**
+     * 输出js，将页面的js源代码集合到pool，一起输出
+     *
+     * @return [String] [description]
+     */
     public static function renderScriptPool(){
         $html = '';
         if(!empty(self::$arrScriptPool)) {
@@ -197,7 +260,11 @@ class FISResource {
         return $html;
     }
 
-    //获取异步js资源集合，变为json格式的resourcemap
+    /**
+     * 获取异步js资源集合，变为json格式的resourcemap
+     *
+     * @return [String] [json string]
+     */
     public static function getResourceMap() {
         $ret = '';
         $arrResourceMap = array();
@@ -229,7 +296,7 @@ class FISResource {
         if (isset(self::$arrRequireAsyncCollection['pkg']) && $needPkg) {
             foreach (self::$arrRequireAsyncCollection['pkg'] as $id => $arrRes) {
                 $arrResourceMap['pkg'][$id] = array(
-                    'url'=> $arrRes['uri']
+                    'url'=> $arrRes['uri'],
                 );
             }
         }
@@ -239,7 +306,13 @@ class FISResource {
         return  $ret;
     }
 
-    //获取命名空间的map.json
+    /**
+     * 获取命名空间的map.json
+     *
+     * @param  [String] $strNamespace [description]
+     * @param  [Smarty] $smarty       [description]
+     * @return [Boolean]               [description]
+     */
     public static function register($strNamespace, $smarty) {
         if($strNamespace === '__global__'){
             $strMapName = 'map.json';
@@ -279,7 +352,10 @@ class FISResource {
 
     /**
      * 已经分析到的组件在后续被同步使用时在异步组里删除。
-     * @param $strName
+     *
+     * @param  string  $strName  [description]
+     * @param  boolean $onlyDeps [description]
+     * @return mixed            [description]
      */
     private static function delAsyncDeps($strName, $onlyDeps = false) {
         if (isset(self::$arrAsyncDeleted[$strName])) {

@@ -8,12 +8,20 @@
  * {%widget name="demo:widget/test/test.tpl"%}
  * @package fis-plus smarty plugin
  * @author  Yang,junlong at 2015-07-14 16:32:58 commonts.
- * @version $Id$
+ * @version $Id: compiler.widget.php 36962 2015-07-29 09:27:24Z yangjunlong $
  */
+
 class fis_widget_map {
 
     private static $arrCached = array();
 
+    /**
+     * 
+     * 
+     * @param  [type] &$strFilename [description]
+     * @param  [Smarty] &$smarty      [description]
+     * @return [String]               [description]
+     */
     public static function lookup(&$strFilename, &$smarty) {
         $strPath = self::$arrCached[$strFilename];
         if(isset($strPath)) {
@@ -32,6 +40,13 @@ class fis_widget_map {
     }
 }
 
+/**
+ * {%widget name="home:widget/test.tpl"%}
+ * 
+ * @param  [Array] $arrParams [description]
+ * @param  [Smarty] $smarty    [description]
+ * @return [String]            [php code string]
+ */
 function smarty_compiler_widget($arrParams, $smarty) {
     //支持1.X widget 通过path属性判断 同时判断是否有name属性
     if (isset($arrParams['path'])) {
@@ -88,7 +103,13 @@ function smarty_compiler_widget($arrParams, $smarty) {
     return $strCode;
 }
 
-
+/**
+ * get widget code
+ *
+ * @param  [String] $path      [description]
+ * @param  [Smarty] $arrParams [description]
+ * @return [String]            [description]
+ */
 function getWidgetStrCode($path, $arrParams) {
     $strFuncParams = getFuncParams($arrParams);
     $path = trim($path,"\"");
@@ -107,6 +128,12 @@ function getWidgetStrCode($path, $arrParams) {
     return $strCode;
 }
 
+/**
+ * get function params
+ *
+ * @param  [Array] $arrParams [description]
+ * @return [String]            [description]
+ */
 function getFuncParams($arrParams) {
     $arrFuncParams = array();
     foreach ($arrParams as $_key => $_value) {

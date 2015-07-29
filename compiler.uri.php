@@ -8,7 +8,15 @@
  * <img src="{%url name="demo:widget/test/img/test.png"%}" />
  * @package fis-plus smarty plugin
  * @author  Yang,junlong at 2015-07-14 16:29:29 commonts.
- * @version $Id$
+ * @version $Id: compiler.uri.php 36962 2015-07-29 09:27:24Z yangjunlong $
+ */
+
+/**
+ * 
+ * 
+ * @param  [Array] $arrParams [description]
+ * @param  [Smarty] $smarty    [description]
+ * @return [String]            [description]
  */
 function smarty_compiler_uri($arrParams, $smarty) {
     $strName = $arrParams['name'];

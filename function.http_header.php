@@ -16,9 +16,16 @@
  * @example
  * {%http_header type="json" charset="utf-8"%}
  * @author Yang,junlong at 2015-07-03 16:45:32 update.
- * @version $Id$
+ * @version $Id: function.http_header.php 36962 2015-07-29 09:27:24Z yangjunlong $
  */
 
+/**
+ * {%http_header type="html" charset="UTF-8"%}
+ * 
+ * @param  [type] $params  [description]
+ * @param  [type] &$smarty [description]
+ * @return [type]          [description]
+ */
 function smarty_function_http_header($params, &$smarty) {
     $DEFAULT_MIME = 'html';
     $DEFAULT_CHARSET = 'utf-8';
@@ -30,7 +37,7 @@ function smarty_function_http_header($params, &$smarty) {
         'javascript' => 'application/x-javascript',
         'js' => 'application/x-javascript',
         'xml' => 'text/xml',
-        'stream' => 'application/octet-stream'
+        'stream' => 'application/octet-stream',
     );
     if (array_key_exists($type, $mimeTypes)) {
         $mime = $mimeTypes[$type];

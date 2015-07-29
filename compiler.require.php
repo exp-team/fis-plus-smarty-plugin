@@ -8,9 +8,16 @@
  * {%require name="demo:static/demo/demo.less"%}
  * @package fis-plus smarty plugin
  * @author  Yang,junlong at 2015-07-14 16:20:40 commonts.
- * @version $Id$
+ * @version $Id: compiler.require.php 36962 2015-07-29 09:27:24Z yangjunlong $
  */
 
+/**
+ * {%require name="demo:static/demo/demo.less"%}
+ *
+ * @param  [type] $arrParams [description]
+ * @param  [type] $smarty    [description]
+ * @return [type]            [description]
+ */
 function smarty_compiler_require($arrParams, $smarty) {
     $strName = $arrParams['name'];
     $src = isset($arrParams['src']) ? $arrParams['src'] : false;

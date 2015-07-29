@@ -1,16 +1,13 @@
 <?php
-global $fis_smarty_modifier_f_escape_xml_search_array;
-global $fis_smarty_modifier_f_escape_xml_value_array;
-$fis_smarty_modifier_f_escape_xml_search_array = array('&', '<', '>', '\'', '"');
-$fis_smarty_modifier_f_escape_xml_value_array = array('&amp;', '&lt;', '&gt;', '&#39;', '&quot;');
-function smarty_modifier_f_escape_xml($str)
-{
-    global $fis_smarty_modifier_f_escape_xml_search_array;
-    global $fis_smarty_modifier_f_escape_xml_value_array;
+/**
+ * {%$xss | f_escape_xml%}
+ * 
+ * @param  string $str [description]
+ * @return string      [description]
+ */
+function smarty_modifier_f_escape_xml($str){
+    $xml_search_array = array('&', '<', '>', '\'', '"');
+    $xml_value_array = array('&amp;', '&lt;', '&gt;', '&#39;', '&quot;');
 
-    return str_replace(
-        $fis_smarty_modifier_f_escape_xml_search_array,
-        $fis_smarty_modifier_f_escape_xml_value_array,
-        strval($str)
-    );
+    return str_replace($xml_search_array, $xml_value_array, strval($str));
 }

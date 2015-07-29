@@ -15,7 +15,15 @@
  * {%/html%}
  * @package fis-plus smarty plugin
  * @author  Yang,junlong at 2015-07-14 16:10:13 commonts.
- * @version $Id$
+ * @version $Id: compiler.html.php 36962 2015-07-29 09:27:24Z yangjunlong $
+ */
+
+/**
+ * {%html%} ...
+ * 
+ * @param  [Array] $arrParams [description]
+ * @param  [Smarty] $smarty    [description]
+ * @return [String]            [description]
  */
 function smarty_compiler_html($arrParams,  $smarty) {
     $strResourceApiPath = preg_replace('/[\\/\\\\]+/', '/', dirname(__FILE__) . '/FISResource.class.php');
@@ -40,6 +48,13 @@ function smarty_compiler_html($arrParams,  $smarty) {
     return $strCode . "<html{$strAttr}>";
 }
 
+/**
+ * {%/html%}
+ * 
+ * @param  [Array] $arrParams [description]
+ * @param  [Smarty] $smarty    [description]
+ * @return [String]            [description]
+ */
 function smarty_compiler_htmlclose($arrParams,  $smarty) {
     $strCode = '<?php ';
     $strCode .= '$_smarty_tpl->registerFilter(\'output\', array(\'FISResource\', \'renderResponse\'));';

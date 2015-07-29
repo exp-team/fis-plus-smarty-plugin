@@ -10,7 +10,15 @@
  * {%/style%}
  * @package fis-plus smarty plugin
  * @author  Yang,junlong at 2015-07-14 16:27:12 comments.
- * @version $Id$
+ * @version $Id: compiler.style.php 36962 2015-07-29 09:27:24Z yangjunlong $
+ */
+
+/**
+ * {%style id="demo"%}
+ * 
+ * @param  [Array] $params [description]
+ * @param  [Smarty] $smarty [description]
+ * @return [String]         [description]
  */
 function smarty_compiler_style($params, $smarty) {
     $strCode = '<?php ';
@@ -23,6 +31,13 @@ function smarty_compiler_style($params, $smarty) {
     return $strCode;
 }
 
+/**
+ * {%/stype%}
+ * 
+ * @param  [Array] $params [description]
+ * @param  [Smarty] $smarty [description]
+ * @return [String]         [description]
+ */
 function smarty_compiler_styleclose($params, $smarty) {
     $strResourceApiPath = preg_replace('/[\\/\\\\]+/', '/', dirname(__FILE__) . '/FISResource.class.php');
     $strCode  = '<?php ';

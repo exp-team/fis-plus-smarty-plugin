@@ -10,9 +10,16 @@
  * {%/script%}
  * @package fis-plus smarty plugin
  * @author  Yang,junlong at 2015-07-14 16:24:32 comments.
- * @version $Id$
+ * @version $Id: compiler.script.php 36962 2015-07-29 09:27:24Z yangjunlong $
  */
 
+/**
+ * {%script id="demo" priority="10"%}
+ *
+ * @param  [Array] $params [description]
+ * @param  [Smarty] $smarty [description]
+ * @return [String]         [description]
+ */
 function smarty_compiler_script($params, $smarty) {
     $strPriority = isset($params['priority']) ? $params['priority'] : '0';
     $strCode = '<?php ';
@@ -26,6 +33,13 @@ function smarty_compiler_script($params, $smarty) {
     return $strCode;
 }
 
+/**
+ * {%/script%}
+ *
+ * @param  [Array] $params [description]
+ * @param  [Smarty] $smarty [description]
+ * @return [String]         [description]
+ */
 function smarty_compiler_scriptclose($params, $smarty){
     $strResourceApiPath = preg_replace('/[\\/\\\\]+/', '/', dirname(__FILE__) . '/FISResource.class.php');
     $strCode  = '<?php ';

@@ -12,9 +12,16 @@
  * {%/body%}
  * @package fis-plus smarty plugin
  * @author  Yang,junlong at 2015-07-14 15:58:40 commonts.
- * @version $Id$
+ * @version $Id: compiler.body.php 36962 2015-07-29 09:27:24Z yangjunlong $
  */
 
+/**
+ * {%body%} start
+ * 
+ * @param  [type] $arrParams [description]
+ * @param  [type] $smarty    [description]
+ * @return [string]            [description]
+ */
 function smarty_compiler_body($arrParams,  $smarty) {
     $strAttr = '';
     foreach ($arrParams as $_key => $_value) {
@@ -27,6 +34,13 @@ function smarty_compiler_body($arrParams,  $smarty) {
     return '<body' . $strAttr . '>';
 }
 
+/**
+ * {%body%} end
+ * 
+ * @param  [type] $arrParams [description]
+ * @param  [type] $smarty    [description]
+ * @return [string]            [description]
+ */
 function smarty_compiler_bodyclose($arrParams,  $smarty) {
     $strCode = '</body>';
     $strCode .= '<?php ';

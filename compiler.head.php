@@ -12,9 +12,16 @@
  * {%/head%}
  * @package fis-plus smarty plugin
  * @author  Yang,junlong at 2015-07-14 16:06:44 commonts.
- * @version $Id$
+ * @version $Id: compiler.head.php 36962 2015-07-29 09:27:24Z yangjunlong $
  */
 
+/**
+ * {%head%} start
+ * 
+ * @param  [Array] $arrParams [description]
+ * @param  [Smarty] $smarty    [description]
+ * @return [String]            [description]
+ */
 function smarty_compiler_head($arrParams, $smarty) {
     $strAttr = '';
     foreach ($arrParams as $_key => $_value) {
@@ -23,6 +30,13 @@ function smarty_compiler_head($arrParams, $smarty) {
     return '<head' . $strAttr . '>';
 }
 
+/**
+ * {%/head%} end
+ * 
+ * @param  [Array] $arrParams [description]
+ * @param  [Smarty] $smarty    [description]
+ * @return [String]            [description]
+ */
 function smarty_compiler_headclose($arrParams, $smarty) {
     $strResourceApiPath = preg_replace('/[\\/\\\\]+/', '/', dirname(__FILE__) . '/FISResource.class.php');
     $strCode = '<?php ';

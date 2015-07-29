@@ -1,5 +1,11 @@
 <?php
-
+/**
+ * {%$xss | f_escape_path%}
+ *
+ * @param  [type] $string   [description]
+ * @param  string $esc_type [description]
+ * @return [type]           [description]
+ */
 function smarty_modifier_f_escape_path($string, $esc_type = 'urlpathinfo'){
 
 	switch ($esc_type) {
